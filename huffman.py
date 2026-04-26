@@ -1,5 +1,7 @@
 
 import heapq
+import matplotlib.pyplot as plt
+import time
 
 class Node:
     """Represents a node in the Huffman tree"""
@@ -113,30 +115,36 @@ def analyze_compression():
     results = []
     
     files_to_compress = [
-        ("data/small.txt", "text"),
-        ("data/large.txt", "text"),
-        ("data/script.py", "code"),
-        ("data/notes.md", "markdown"),
+        ("data/bst.txt", "text"),
+        ("data/AIWch1.txt", "text"),
+        ("data/fizzBuzz.py", "code"),
+        ("data/ancientEmpires.md", "markdown"),
         ("data/sample.jpg", "image")
     ]
     
     for filepath, file_type in files_to_compress:
         if file_type == "image":
-            # For images, read as binary
+            # for images reading as binary
             with open(filepath, 'rb') as f:
                 data = f.read()
             text = data.decode('latin1')  # Convert bytes to string
         else:
-            # For text files, read normally
+            # for text files reading normally
             with open(filepath, 'r') as f:
                 text = f.read()
         
-        # Now compress all the same way
+        #timing the compression
+        start_time = time.time()
+
+        # compressing 
         frequency = build_frequency_table(text)
         tree = build_huffman_tree(frequency)
         codes = generate_codes(tree)
         encoded = encode(text, codes)
         
+        end_time = time.time()
+        compression_time = end_time - start_time
+
         ratio, original_size, compressed_size = calculate_compression_ratio(text, encoded)
         
         result = {
@@ -144,7 +152,8 @@ def analyze_compression():
             'type': file_type,
             'original_size': original_size,
             'compressed_size': compressed_size,
-            'ratio': ratio
+            'ratio': ratio,
+            'compression_time': compression_time
         }
         
         results.append(result)
@@ -164,8 +173,52 @@ def print_compression_analysis(results):
     
     print("=" * 80)
 
+def visualize_compression_results(results):
+    """Create visualizations of compression analysis"""
+
+    #extracting data
+    filenames = [r['filename'] for r in results]
+    ratios = [r['ratio'] for r in results]
+    times = [r['compression_time'] for r in results]
+
+    #creating figure with subplots
+    fig, axes = plt.subplots(1,2, figsize=(14,5))
+
+    #visualization 1: compression ratio by file
+    axes[0].bar(filenames, ratios, color=['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728'])
+    axes[0].set_ylabel('Compression Ratio (%)', fontsize=12)
+    axes[0].set_xlabel('File Name', fontsize=12)
+    axes[0].set_title('Huffman Compression Ratio by File', fontsize=14, fontweight='bold')
+    axes[0].grid(axis='y', alpha=0.3)
+    axes[0].set_ylim(0, max(ratios) * 1.1)
+
+    #adding value label on bars
+    for i, (filename, ratio) in enumerate(zip(filenames, ratios)):
+        axes[0].text(i, ratio+1, f'{ratio:.1f}%', ha='center', fontsize=10)
+
+    #visualization 2: compression time by file
+    axes[1].bar(filenames, times, color=['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'])
+    axes[1].set_ylabel('Compression Time (seconds)', fontsize=12)
+    axes[1].set_xlabel('File Name', fontsize=12)
+    axes[1].set_title('Huffman Compression Time by File', fontsize=14, fontweight='bold')
+    axes[1].grid(axis='y', alpha=0.3)
+    axes[1].set_ylim(0, max(times) * 1.15)
+
+    #adding value labels on bars
+    for i, (filename, time_val) in enumerate(zip(filenames, times)):
+        axes[1].text(i, time_val + max(times)*0.05, f'{time_val:.4f}s', ha='center', fontsize=10, fontweight='bold')
+
+    plt.tight_layout()
+    plt.savefig('compression_analysis.png', dpi=150, bbox_inches='tight')
+    print("\nVisualization saved as 'compression_analysis.png'")
+    plt.show()
+
 
 if __name__ == "__main__":
-    # Run compression analysis
+
+    # running compression analysis
     results = analyze_compression()
     print_compression_analysis(results)
+
+    # creating visualizations
+    visualize_compression_results(results)
