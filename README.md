@@ -62,4 +62,4 @@ Huffman coding is used in file compression tools (zip, gzip), image formats (jpe
 
 ### Use of AI tools
 
-I used Claude for debugging the single character edge case in the decoder, helping me brainstorm/design meaningful unit tests that cover edge cases, and learning the matplotlib library. I also used Claude to refine my docstrings for functions definitions.
+I used Claude for debugging the single character edge case in the decoder, helping me brainstorm/design meaningful unit tests that cover edge cases, and learning the matplotlib library. I also used Claude to refine my docstrings for functions definitions, and properly formatting the terminal output.
