@@ -87,6 +87,11 @@ def decode(encoded_text, node):
     decoded = ""
     current = node
 
+    #handling edge case: single character
+    if node.char is not None:
+        char_count = len(encoded_text)
+        return node.char * char_count
+
     for bit in encoded_text:
         
         if bit == "0":
