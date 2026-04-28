@@ -49,6 +49,27 @@ class TestHuffmanCompression(unittest.TestCase):
         # compressed should be smaller than original
         self.assertLess(compressed_size, original_size)
 
+    def test_empty_string(self):
+        """Test encoding/decoding with empty string"""
+        text = ""
+            
+        frequency = build_frequency_table(text)
+            
+        # empty string should result in empty frequency table
+        self.assertEqual(len(frequency), 0)
+
+    def test_codes_are_unique(self):
+        """Test that all generated codes are unique"""
+        text = "the quick brown fox jumps over the lazy dog"
+            
+        frequency = build_frequency_table(text)
+        tree = build_huffman_tree(frequency)
+        codes = generate_codes(tree)
+            
+        # all codes should be unique
+        code_values = list(codes.values())
+        self.assertEqual(len(code_values), len(set(code_values)))  # No duplicates
+
 
 if __name__ == '__main__':
     unittest.main()
